@@ -1,0 +1,14 @@
+{
+     "type": "record",
+     "namespace": "com.petro",
+     "name": "Customer",
+     "doc": "Customer of our imaginary service",
+     "fields": [
+       { "name": "first_name", "type": "string", "doc": "First name of the customer." },
+       { "name": "last_name", "type": "string", "doc": "Last name of the customer." },
+       { "name": "age", "type": "int", "doc": "Age of the customer." },
+       { "name": "height", "type": "float", "doc": "Height of the customer. In cms." },
+       { "name": "weight", "type": "float", "doc": "Weight of the customer. In kgs." },
+       { "name": "auto_email_enabled", "type": "boolean", "default": true, "doc": "Automated emails are turned on." }
+     ]  
+}
