@@ -3,9 +3,11 @@ package com.petro.avro.specific;
 import com.delasport.wallet.Action;
 import com.delasport.wallet.ContainerArray;
 import com.petro.Container;
+import com.petro.DecimalContainer;
 import com.petro.Snapshot;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -23,22 +25,24 @@ public class SpecificRecordComparison {
             .toList();
     private static final Instant NOW = Instant.now();
 
+//    public static void main(String[] args) {
+//
+//        final long startMap = System.currentTimeMillis();
+//        measureMap();
+//        final long endMap = System.currentTimeMillis();
+//
+//        final long startArray = System.currentTimeMillis();
+//        measureArray();
+//        final long endArray = System.currentTimeMillis();
+//
+//        System.out.printf("Map time is %s ms. Array time is %s ms", endMap - startMap, endArray - startArray);
+//    }
+
     public static void main(String[] args) {
-
-        measureMap("test.avro");
-
-        final long startMap = System.currentTimeMillis();
-        measureMap("container-map.avro");
-        final long endMap = System.currentTimeMillis();
-
-        final long startArray = System.currentTimeMillis();
-        measureArray();
-        final long endArray = System.currentTimeMillis();
-
-        System.out.printf("Map time is %s ms. Array time is %s ms", endMap - startMap, endArray - startArray);
+        measureDecimal(18, 2, 1000);
     }
 
-    private static void measureMap(String fileName) {
+    private static void measureMap() {
         final Container container = Container.newBuilder()
                 .setSnapshots(BALANCE_IDS.stream()
                         .collect(Collectors.toMap(Function.identity(), it ->
@@ -62,7 +66,7 @@ public class SpecificRecordComparison {
             dataFileWriter.create(container.getSchema(), new File("container-map.avro"));
             dataFileWriter.append(container);
             System.out.println("successfully wrote container-map.avro");
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -92,7 +96,31 @@ public class SpecificRecordComparison {
             dataFileWriter.create(container.getSchema(), new File("container-array.avro"));
             dataFileWriter.append(container);
             System.out.println("successfully wrote container-array.avro");
-        } catch (IOException e){
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static void measureDecimal(int precision, int scale, int repeat) {
+        final String decimal = "1".repeat(precision);
+
+        final String decimalWithScale = scale > 0 ? decimal +  "." + "3".repeat(scale) : decimal;
+
+        final var container = DecimalContainer.newBuilder()
+                .setAmount(new BigDecimal(decimalWithScale).stripTrailingZeros())
+                .build();
+
+        // write it out to a file
+        final DatumWriter<DecimalContainer> datumWriter = new SpecificDatumWriter<>(DecimalContainer.class);
+
+        try (DataFileWriter<DecimalContainer> dataFileWriter = new DataFileWriter<>(datumWriter)) {
+            dataFileWriter.create(container.getSchema(), new File("decimal-container.avro"));
+            for (int i = 0; i < repeat; i++) {
+                dataFileWriter.append(container);
+            }
+            System.out.println("successfully wrote decimal-container.avro");
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "ContainerArray",
-  "namespace": "com.delasport.wallet",
+  "namespace": "com.petro",
   "fields": [
     {
       "name": "actions",

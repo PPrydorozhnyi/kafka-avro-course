@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "DecimalContainer",
+  "namespace": "com.petro",
+  "fields": [
+    {
+      "name": "amount",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 36,
+        "scale": 2
+      }
+    }
+  ]
+}
